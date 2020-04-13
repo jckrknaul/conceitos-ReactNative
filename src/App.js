@@ -27,17 +27,21 @@ export default function App() {
   }, []);
   
   async function handleLikeRepository(id) {
-  
-    await api.post(`/repositories/${id}/like`);
-  
-    setRepository((await api.get("/repositories")).data);
+    const response = await api.post(`/repositories/${id}/like`);
+    //setRepository((await api.get("/repositories")).data);
+
+    if (response.status == 200) {
+      const repoIndex = repositories.findIndex((repo) => repo.id === id);
+      const newRepo = repositories.filter((rep) => rep.id !== id);
+      newRepo.splice(repoIndex, 0, response.data);
+      setRepository(newRepo);
+    }
   }
 
   return (
     <>
       <StatusBar barStyle="light-content" backgroundColor="#7159c1" />
       <SafeAreaView style={styles.container}>
-
       {
         repositories.map((repository) => (
           <View key={repository.id} style={styles.repositoryContainer}>
